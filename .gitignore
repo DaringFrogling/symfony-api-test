@@ -1,0 +1,12 @@
+# Project data
+/environment/mysql/data/**
+!/environment/mysql/data/.gitkeep
+/environment/mysql/logs/**
+!/environment/mysql/logs/.gitkeep
+/environment/nginx/logs/**
+!/environment/nginx/logs/.gitkeep
+
+# User-specific stuff
+.idea/
+.idea_modules/
+.DS_Store

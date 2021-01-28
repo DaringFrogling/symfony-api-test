@@ -1,0 +1,65 @@
+version: '3'
+
+networks:
+  nginx-mysql57-php-adminer:
+
+services:
+
+  # nginx
+  nginx:
+    image: nginx:stable-alpine
+    container_name: swivl-nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ./app:/var/www/app
+      - ./environment/nginx/conf.d:/etc/nginx/conf.d
+      - ./environment/nginx/logs:/var/log/nginx/
+    depends_on:
+      - php74
+      - mysql57
+    networks:
+      - nginx-mysql57-php-adminer
+
+  # mysql
+  mysql57:
+    image: mysql:5.7
+    container_name: swivl-db
+    restart: unless-stopped
+    volumes:
+      - ./environment/mysql/data:/var/lib/mysql
+      - ./environment/mysql/conf.d:/etc/mysql/conf.d
+      - ./environment/mysql/logs:/var/log/mysql/
+    ports:
+      - "4307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_USER_PASSWORD: secret
+      MYSQL_USER: user
+    networks:
+      - nginx-mysql57-php-adminer
+
+  # adminer
+  adminer:
+    image: adminer
+    container_name: swivl-adminer
+    restart: unless-stopped
+    ports:
+      - 8000:8080
+    networks:
+      - nginx-mysql57-php-adminer
+
+  # php-7.4
+  php74:
+    build:
+      context: ./environment/php/build
+      dockerfile: Dockerfile
+    working_dir: /var/www/app
+    container_name: swivl-app
+    volumes:
+      - ./app:/var/www/app
+      - ./environment/php/php-ini/7.4/php.ini:/usr/local/etc/php/php.ini
+    ports:
+      - "9000:9000"
+    networks:
+      - nginx-mysql57-php-adminer
