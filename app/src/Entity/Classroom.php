@@ -24,7 +24,7 @@ class Classroom
     private $class_id;
 
     /**
-     * @ORM\Column(type="string", length=120)
+     * @ORM\Column(type="string", length=120, unique=true)
      */
     private $class_name;
 
