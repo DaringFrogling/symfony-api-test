@@ -6,7 +6,6 @@ use App\Entity\Classroom;
 use App\Form\ClassroomType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -20,7 +19,7 @@ class ClassroomController extends AbstractApiController
      */
     public function index(Request $request): Response
     {
-        $classrooms = $this->getDoctrine()->getRepository(Classroom::class)->findAll();
+        $classrooms = $this->findList();
 
         return $this->respond($classrooms);
     }
@@ -30,15 +29,7 @@ class ClassroomController extends AbstractApiController
      */
     public function show(Request $request): Response
     {
-        $classroomId = $request->get('id');
-
-        $classroom = $this->getDoctrine()->getRepository(Classroom::class)->findOneBy([
-            'class_id' => $classroomId
-        ]);
-
-        if(!$classroom) {
-            throw new NotFoundHttpException('Classroom doesnt exist for this ID');
-        }
+        $classroom = $this->findOne($request, 'id');
 
         return $this->respond($classroom);
     }
@@ -70,15 +61,7 @@ class ClassroomController extends AbstractApiController
      */
     public function delete(Request $request): Response
     {
-        $classroomId = $request->get('id');
-        
-        $classroom = $this->getDoctrine()->getRepository(Classroom::class)->findOneBy([
-            'class_id' => $classroomId
-        ]);
-
-        if(!$classroom) {
-            throw new NotFoundHttpException('Classroom doesnt exist');
-        }
+        $classroom = $this->findOne($request, 'id');
 
         $this->getDoctrine()->getManager()->remove($classroom);
         $this->getDoctrine()->getManager()->flush();
@@ -91,16 +74,8 @@ class ClassroomController extends AbstractApiController
      */
     public function update(Request $request): Response
     {
-        $classroomId = $request->get('id');
-
-        $classroom = $this->getDoctrine()->getRepository(Classroom::class)->findOneBy([
-            'class_id' => $classroomId
-        ]);
-
-        if(!$classroom) {
-            throw new NotFoundHttpException('Classroom doesnt exist');
-        }
-
+        $classroom = $this->findOne($request, 'id');
+        
         $form = $this->buildForm(ClassroomType::class, $classroom, [
             'method' => $request->getMethod(),
         ]);
