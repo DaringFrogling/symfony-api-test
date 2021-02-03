@@ -22,7 +22,7 @@ abstract class AbstractApiController extends AbstractFOSRestController
         return $this->handleView($this->view($data, $statusCode));
     }
 
-    protected function findList()  // Указать return type
+    protected function findList()
     {
         $item = $this->getDoctrine()->getRepository(Classroom::class)->findAll();
 
@@ -33,7 +33,7 @@ abstract class AbstractApiController extends AbstractFOSRestController
         return $item;
     }
 
-    protected function findOne(Request $request, $data = '')  // Указать return type,
+    protected function findOne(Request $request, $data = '')
     {
         $itemId = $request->get($data);
         $item = $this->getDoctrine()->getRepository(Classroom::class)->findOneBy([
